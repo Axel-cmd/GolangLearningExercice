@@ -19,7 +19,7 @@ func main() {
 		fmt.Println("5. Sortir")
 
 		var choice int
-		fmt.Print("Enter your choice: ")
+		fmt.Print("Faites votre choix : ")
 		fmt.Scanln(&choice)
 
 		switch choice {
