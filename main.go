@@ -58,7 +58,7 @@ func actionGet(d *dictionary.Dictionary) {
 		return
 	}
 
-	fmt.Printf("La définition du mot %s est : %s\n", word, entry.String())
+	fmt.Printf("La définition du mot %s est : %s\n", word, entry.Definition)
 }
 
 func actionRemove(d *dictionary.Dictionary) {

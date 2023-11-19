@@ -14,10 +14,6 @@ type Entry struct {
 	Definition string `json:"definition"`
 }
 
-func (e Entry) String() string {
-	return e.Definition
-}
-
 // Définition d'un dictionnaire
 type Dictionary struct {
 	entries []Entry // liste des entrées du dictionnaire

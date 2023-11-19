@@ -75,3 +75,35 @@ Ajoutez et validez (git add, git commit) vos modifications pour chaque étape.
 Poussez (git push) régulièrement vos modifications sur GitHub.
 	
 Assurez-vous que votre programme fonctionne correctement avec les données stockées dans un fichier.
+
+
+
+Exercice Avancé 4 : Gestion Concurrente avec Channels en Go
+
+Contexte : Vous avez maintenant une version fonctionnelle de votre dictionnaire qui stocke les entrées dans un fichier. Pour rendre votre programme plus performant, vous allez introduire la gestion concurrente en utilisant des channels pour les opérations d'ajout et de suppression.
+
+Tâches:
+	
+Ajoutez des channels pour les opérations d'ajout (Add) et de suppression (Remove) dans le package dictionary.
+	
+Utilisez la concurrence pour gérer simultanément les opérations d'ajout et de suppression dans main.go.
+	
+Assurez-vous que les opérations sur les données fonctionnent correctement en utilisant la gestion concurrente.
+
+Instructions :
+
+Modifiez dictionary.go pour ajouter des channels pour les opérations d'ajout et de suppression.
+	
+Adaptez les méthodes Add et Remove pour utiliser des channels.
+	
+Dans main.go, utilisez la concurrence pour effectuer simultanément des opérations d'ajout et de suppression.
+	
+Testez attentivement pour vous assurer que la gestion concurrente fonctionne correctement.
+
+Consignes supplémentaires :
+	
+Ajoutez et validez (git add, git commit) vos modifications à chaque étape.
+	
+Poussez (git push) régulièrement vos modifications sur GitHub.
+	
+Documentez vos changements dans les messages de commit.
