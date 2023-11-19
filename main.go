@@ -34,7 +34,7 @@ func main() {
 		case 5:
 			os.Exit(0)
 		default:
-			fmt.Println("Invalid choice. Please enter a number between 1 and 5.")
+			fmt.Println("Choix invalide. Choississez un nombre entre 1 et 5.")
 		}
 	}
 }

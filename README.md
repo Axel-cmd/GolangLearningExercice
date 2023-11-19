@@ -43,3 +43,35 @@ Copiez les méthodes Add, Get, Remove, et List de main.go vers dictionary.go.
 Modifiez le fichier main.go pour importer le package dictionary et utilisez les méthodes du package pour réaliser les opérations sur la map.
 	
 Exécutez le programme et assurez-vous que tout fonctionne comme prévu.
+
+
+
+Exercice3 : Gestion de Données avec Fichier en Go
+
+Contexte: Vous avez implémenté un dictionnaire en utilisant une map dans un exercice précédent. Maintenant, vous allez modifier votre implémentation pour stocker les données dans un fichier plutôt que dans une map.
+
+Tâches:
+	
+Modifiez le package dictionary pour utiliser un fichier au lieu d'une map pour stocker les entrées du dictionnaire.
+	
+Utilisez les méthodes Add, Get, Remove, et List du package dictionary dans main.go.
+	
+Assurez-vous que les opérations sur les données fonctionnent correctement après ces modifications.
+
+
+Instructions:
+	
+Modifiez le code dans dictionary.go pour utiliser un fichier (au format de votre choix) au lieu d'une map pour stocker les entrées du dictionnaire.
+	
+Adaptez les méthodes Add, Get, Remove, et List en conséquence.
+	
+Testez les opérations dans main.go pour garantir que tout fonctionne correctement.
+
+
+Consignes supplémentaires:
+	
+Ajoutez et validez (git add, git commit) vos modifications pour chaque étape.
+	
+Poussez (git push) régulièrement vos modifications sur GitHub.
+	
+Assurez-vous que votre programme fonctionne correctement avec les données stockées dans un fichier.
