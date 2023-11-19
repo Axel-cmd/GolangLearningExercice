@@ -16,19 +16,40 @@ type Entry struct {
 
 // Définition d'un dictionnaire
 type Dictionary struct {
-	entries []Entry // liste des entrées du dictionnaire
+	entries    []Entry // liste des entrées du dictionnaire
+	addChan    chan Entry
+	removeChan chan string
 }
 
 // contructeur d'un objet Dictionnaire
 func New() *Dictionary {
-	d := &Dictionary{}
+	d := &Dictionary{
+		addChan:    make(chan Entry),
+		removeChan: make(chan string),
+	}
 	d.loadFromFile() // charger les données depuis le fichier
+	go d.listenChannels()
 	return d
+}
+
+func (d *Dictionary) listenChannels() {
+	for {
+		select {
+		case entry := <-d.addChan:
+			d.handleAdd(entry)
+		case word := <-d.removeChan:
+			d.handleRemove(word)
+		}
+	}
 }
 
 // ajouté un mot dans le dictionnaire
 func (d *Dictionary) Add(word, definition string) {
 	entry := Entry{Word: word, Definition: definition}
+	d.addChan <- entry
+}
+
+func (d *Dictionary) handleAdd(entry Entry) {
 	d.entries = append(d.entries, entry)
 	d.saveToFile()
 }
@@ -46,6 +67,11 @@ func (d *Dictionary) Get(word string) (Entry, error) {
 
 // supprimer un mot dans le dictionnaire
 func (d *Dictionary) Remove(word string) {
+	d.removeChan <- word
+
+}
+
+func (d *Dictionary) handleRemove(word string) {
 	for i, entry := range d.entries {
 		if entry.Word == word {
 			d.entries = append(d.entries[:i], d.entries[i+1:]...)
