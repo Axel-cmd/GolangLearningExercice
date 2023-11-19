@@ -1,68 +1,94 @@
 package main
 
 import (
+	"bufio"
+	"estiam/dictionary"
 	"fmt"
-	"sort"
+	"os"
 )
 
 func main() {
+	d := dictionary.New()
 
-	wordMap := make(map[string]string)
+	for {
+		fmt.Println("Choisir une action :")
+		fmt.Println("1. Ajouté un mot et sa définition")
+		fmt.Println("2. Récupérer la définition d'un mot")
+		fmt.Println("3. Supprimer un mot")
+		fmt.Println("4. Lister les mots et les définitions du dictionnaire")
+		fmt.Println("5. Sortir")
 
-	word := "zigzag"
-	definition := "Ligne brisée"
+		var choice int
+		fmt.Print("Enter your choice: ")
+		fmt.Scanln(&choice)
 
-	word2 := "parapluie"
-	definition2 := "Objet portatif constitué par une étoffe tendue sur une armature pliante à manche, et qui sert d'abri contre la pluie."
-
-	add(wordMap, word, definition)
-	fmt.Printf("%s ajouté dans le dictionnaire..\n", word)
-
-	add(wordMap, word2, definition2)
-	fmt.Printf("%s ajouté dans le dictionnaire..\n", word2)
-
-	fmt.Println(get(wordMap, word))
-
-	wordList := list(wordMap)
-	fmt.Println(wordList)
-
-	remove(wordMap, word)
-	fmt.Printf("%s supprimé du dictionnaire...\n", word)
-
-	fmt.Println(get(wordMap, word))
-
-}
-
-// ajouté un mot dans la map
-func add(wordMap map[string]string, word string, definition string) {
-	wordMap[word] = definition
-}
-
-func get(wordMap map[string]string, word string) (result string) {
-	value, ok := wordMap[word]
-
-	if !ok {
-		result = fmt.Sprintf("Le mot %s n'est pas dans le dictionnaire", word)
-	} else {
-		result = value
+		switch choice {
+		case 1:
+			actionAdd(d)
+		case 2:
+			actionGet(d)
+		case 3:
+			actionRemove(d)
+		case 4:
+			actionList(d)
+		case 5:
+			os.Exit(0)
+		default:
+			fmt.Println("Invalid choice. Please enter a number between 1 and 5.")
+		}
 	}
+}
+
+func actionAdd(d *dictionary.Dictionary) {
+	// récupérer le mot
+	word := getUserInput("Entrer un mot: ")
+	// récupérer la définition
+	definition := getUserInput("Entrer la définition du mot: ")
+	// ajouté le mot
+	d.Add(word, definition)
+	fmt.Println("Mot ajouté dans le dictionnaire.")
+}
+
+func actionGet(d *dictionary.Dictionary) {
+	word := getUserInput("Récupérer un mot: ")
+
+	entry, err := d.Get(word)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	fmt.Printf("La définition du mot %s est : %s\n", word, entry.String())
+}
+
+func actionRemove(d *dictionary.Dictionary) {
+	word := getUserInput("Quel mot souhaiter vous supprimer : ")
+
+	d.Remove(word)
+	fmt.Println("Mot supprimé avec succès.")
+}
+
+func actionList(d *dictionary.Dictionary) {
+	ordered, entries := d.List()
+
+	if len(entries) == 0 {
+		fmt.Println("Le dictionnaire est vide.")
+		return
+	}
+
+	fmt.Println("Les mots du dictionnaire : ")
+	for _, word := range ordered {
+		fmt.Printf("%s\n", word)
+	}
+}
+
+// récupérer une entrée utilisateur
+func getUserInput(text string) (result string) {
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print(text)
+	input, _ := reader.ReadString('\n')
+	result = input[:len(input)-1] // supprimer le caractère de retour de ligne
+
 	return
-}
-
-func remove(wordMap map[string]string, word string) {
-	delete(wordMap, word)
-}
-
-func list(wordMap map[string]string) (result []string) {
-	var wordList []string
-	for word := range wordMap {
-		wordList = append(wordList, word)
-	}
-	sort.Strings(wordList)
-
-	for _, word := range wordList {
-		result = append(result, fmt.Sprintf("%s: %s", word, wordMap[word]))
-	}
-
-	return result
 }
