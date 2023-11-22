@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"sort"
 )
 
 // Représente une entrée dans le dictionnaire
@@ -44,8 +43,7 @@ func (d *Dictionary) listenChannels() {
 }
 
 // ajouté un mot dans le dictionnaire
-func (d *Dictionary) Add(word, definition string) {
-	entry := Entry{Word: word, Definition: definition}
+func (d *Dictionary) Add(entry Entry) {
 	d.addChan <- entry
 }
 
@@ -79,22 +77,6 @@ func (d *Dictionary) handleRemove(word string) {
 			return
 		}
 	}
-}
-
-func (d *Dictionary) List() ([]string, map[string]Entry) {
-	sort.Slice(d.entries, func(i, j int) bool {
-		return d.entries[i].Word < d.entries[j].Word
-	})
-
-	words := make([]string, len(d.entries))
-	entriesMap := make(map[string]Entry)
-
-	for i, entry := range d.entries {
-		words[i] = entry.Word
-		entriesMap[entry.Word] = entry
-	}
-
-	return words, entriesMap
 }
 
 func (d *Dictionary) loadFromFile() {
