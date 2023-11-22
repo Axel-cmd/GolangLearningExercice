@@ -1,0 +1,4 @@
+2023/11/22 19:23:51 [GET] [::1]:58635 /words/zigzag PostmanRuntime/7.35.0
+2023/11/22 19:23:58 [GET] [::1]:58635 /words/test PostmanRuntime/7.35.0
+2023/11/22 19:27:03 [POST] [::1]:58668 /words PostmanRuntime/7.35.0
+2023/11/22 19:27:06 [DELETE] [::1]:58668 /words/test PostmanRuntime/7.35.0
