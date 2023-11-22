@@ -2,3 +2,10 @@
 2023/11/22 19:23:58 [GET] [::1]:58635 /words/test PostmanRuntime/7.35.0
 2023/11/22 19:27:03 [POST] [::1]:58668 /words PostmanRuntime/7.35.0
 2023/11/22 19:27:06 [DELETE] [::1]:58668 /words/test PostmanRuntime/7.35.0
+2023/11/22 19:46:31 [DELETE] [::1]:58946 /words/test PostmanRuntime/7.35.0
+2023/11/22 19:47:13 [DELETE] [::1]:58946 /words/test PostmanRuntime/7.35.0
+2023/11/22 19:47:39 [GET] [::1]:58946 /words/test PostmanRuntime/7.35.0
+2023/11/22 19:48:57 [GET] [::1]:58946 /words/test PostmanRuntime/7.35.0
+2023/11/22 19:49:02 [POST] [::1]:58946 /words PostmanRuntime/7.35.0
+2023/11/22 19:49:05 [GET] [::1]:58946 /words/test PostmanRuntime/7.35.0
+2023/11/22 19:49:08 [DELETE] [::1]:58946 /words/test PostmanRuntime/7.35.0

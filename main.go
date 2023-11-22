@@ -17,7 +17,11 @@ func main() {
 
 	r := mux.NewRouter().StrictSlash(true)
 
+	// middleware de logging
 	r.Use(middleware.LoggingMiddleware)
+
+	// middleware d'authentication
+	r.Use(middleware.AuthMiddelware)
 
 	r.HandleFunc("/words/{word}", HandleGetWord).Methods("GET")
 	r.HandleFunc("/words", HandleAddWord).Methods("POST")
