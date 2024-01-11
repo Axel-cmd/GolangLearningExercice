@@ -15,6 +15,7 @@ type Entry struct {
 
 // Définition d'un dictionnaire
 type Dictionary struct {
+	file       string  // fichier ou est stocké le dictionnaire
 	entries    []Entry // liste des entrées du dictionnaire
 	addChan    chan Entry
 	removeChan chan string
@@ -23,6 +24,7 @@ type Dictionary struct {
 // contructeur d'un objet Dictionnaire
 func New() *Dictionary {
 	d := &Dictionary{
+		file:       "dictionary.json",
 		addChan:    make(chan Entry),
 		removeChan: make(chan string),
 	}
@@ -80,9 +82,10 @@ func (d *Dictionary) handleRemove(word string) {
 }
 
 func (d *Dictionary) loadFromFile() {
-	data, err := os.ReadFile("dictionary.json")
+	data, err := os.ReadFile(d.file)
 	if err != nil {
 		// si aucun fichier
+		//errors.New(fmt.Sprintf("Le mot %s n'a pas été trouvé dans le dictionnaire.", word))
 		return
 	}
 
@@ -98,7 +101,7 @@ func (d *Dictionary) saveToFile() {
 		panic(err)
 	}
 
-	err = os.WriteFile("dictionary.json", data, 0644)
+	err = os.WriteFile(d.file, data, 0644)
 	if err != nil {
 		panic(err)
 	}

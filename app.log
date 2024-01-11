@@ -9,3 +9,6 @@
 2023/11/22 19:49:02 [POST] [::1]:58946 /words PostmanRuntime/7.35.0
 2023/11/22 19:49:05 [GET] [::1]:58946 /words/test PostmanRuntime/7.35.0
 2023/11/22 19:49:08 [DELETE] [::1]:58946 /words/test PostmanRuntime/7.35.0
+2024/01/11 10:54:56 [GET] [::1]:58106 /words/test PostmanRuntime/7.35.0
+2024/01/11 11:02:16 [GET] [::1]:58340 /words/test PostmanRuntime/7.35.0
+2024/01/11 11:02:21 [GET] [::1]:58340 /words/zigzag PostmanRuntime/7.35.0
