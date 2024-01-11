@@ -13,7 +13,13 @@ var d *dictionary.Dictionary
 
 func main() {
 
-	d = dictionary.New()
+	var err error
+	// créer l'objet dictionnaire
+	d, err = dictionary.New()
+	if err != nil {
+		// s'il y a une erreur on log et l'application s'arrête
+		log.Fatal(err)
+	}
 
 	r := mux.NewRouter().StrictSlash(true)
 

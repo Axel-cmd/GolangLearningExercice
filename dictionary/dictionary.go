@@ -2,8 +2,9 @@ package dictionary
 
 import (
 	"encoding/json"
-	"errors"
+	"estiam/middleware"
 	"fmt"
+	"net/http"
 	"os"
 )
 
@@ -22,87 +23,82 @@ type Dictionary struct {
 }
 
 // contructeur d'un objet Dictionnaire
-func New() *Dictionary {
+func New() (*Dictionary, error) {
 	d := &Dictionary{
 		file:       "dictionary.json",
 		addChan:    make(chan Entry),
 		removeChan: make(chan string),
 	}
-	d.loadFromFile() // charger les données depuis le fichier
-	go d.listenChannels()
-	return d
-}
-
-func (d *Dictionary) listenChannels() {
-	for {
-		select {
-		case entry := <-d.addChan:
-			d.handleAdd(entry)
-		case word := <-d.removeChan:
-			d.handleRemove(word)
-		}
+	err := d.loadFromFile() // charger les données depuis le fichier
+	if err != nil {
+		return &Dictionary{}, err
 	}
+	return d, nil
 }
 
-// ajouté un mot dans le dictionnaire
-func (d *Dictionary) Add(entry Entry) {
-	d.addChan <- entry
-}
-
-func (d *Dictionary) handleAdd(entry Entry) {
+func (d *Dictionary) HandleAdd(entry Entry, errorChan chan<- *middleware.APIError) {
 	d.entries = append(d.entries, entry)
-	d.saveToFile()
+
+	err := d.saveToFile()
+	if err != nil {
+		errorChan <- &middleware.APIError{Code: http.StatusInternalServerError, Message: "erreur lors de la tentative d'ajout d'un mot dans le dictionnaire"}
+		return
+	}
+
+	errorChan <- nil
 }
 
 // récupérer la définition d'un mot dans le dictionnaire
-func (d *Dictionary) Get(word string) (Entry, error) {
+func (d *Dictionary) Get(word string) (Entry, *middleware.APIError) {
 	for _, entry := range d.entries {
 		if entry.Word == word {
 			return entry, nil
 		}
 	}
 
-	return Entry{}, errors.New(fmt.Sprintf("Le mot %s n'a pas été trouvé dans le dictionnaire.", word))
+	return Entry{}, &middleware.APIError{Code: http.StatusNotFound, Message: "le mot n'a pas été trouvé dans le dictionnaire"}
 }
 
-// supprimer un mot dans le dictionnaire
-func (d *Dictionary) Remove(word string) {
-	d.removeChan <- word
-
-}
-
-func (d *Dictionary) handleRemove(word string) {
+func (d *Dictionary) HandleRemove(word string, errorChan chan<- *middleware.APIError) {
 	for i, entry := range d.entries {
 		if entry.Word == word {
 			d.entries = append(d.entries[:i], d.entries[i+1:]...)
-			d.saveToFile()
+			err := d.saveToFile()
+			if err != nil {
+				errorChan <- &middleware.APIError{Code: http.StatusInternalServerError, Message: "erreur lors de la tentative de suppression du mot dans le dictionnaire"}
+				return
+			}
+			errorChan <- nil
 			return
 		}
 	}
+	errorChan <- &middleware.APIError{Code: http.StatusNotFound, Message: "impossible de supprimer le mot car il n'est pas présent dans le dictionnaire"}
 }
 
-func (d *Dictionary) loadFromFile() {
+func (d *Dictionary) loadFromFile() error {
 	data, err := os.ReadFile(d.file)
 	if err != nil {
 		// si aucun fichier
-		//errors.New(fmt.Sprintf("Le mot %s n'a pas été trouvé dans le dictionnaire.", word))
-		return
+
+		return fmt.Errorf("erreur lors de la tentative de lecture du fichier %s", d.file)
+
 	}
 
 	err = json.Unmarshal(data, &d.entries)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("erreur lors de la récupération des données dans le fichier dictionnaire : %s", d.file)
 	}
+
+	return nil
 }
 
-func (d *Dictionary) saveToFile() {
+func (d *Dictionary) saveToFile() error {
 	data, err := json.MarshalIndent(d.entries, "", "  ")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = os.WriteFile(d.file, data, 0644)
-	if err != nil {
-		panic(err)
-	}
+
+	return err
 }
