@@ -20,19 +20,15 @@ type SaveFunction interface {
 
 // Définition d'un dictionnaire
 type Dictionary struct {
-	file       string  // fichier ou est stocké le dictionnaire
-	entries    []Entry // liste des entrées du dictionnaire
-	addChan    chan Entry
-	removeChan chan string
-	saveFn     SaveFunction
+	file    string  // fichier ou est stocké le dictionnaire
+	entries []Entry // liste des entrées du dictionnaire
+	saveFn  SaveFunction
 }
 
 // contructeur d'un objet Dictionnaire
 func New() (*Dictionary, error) {
 	d := &Dictionary{
-		file:       "dictionary.json",
-		addChan:    make(chan Entry),
-		removeChan: make(chan string),
+		file: "dictionary.json",
 	}
 	err := d.loadFromFile() // charger les données depuis le fichier
 	if err != nil {
