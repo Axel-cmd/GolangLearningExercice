@@ -19,7 +19,7 @@ func AuthMiddelware(next http.Handler) http.Handler {
 			return
 		}
 
-		// Vérifier la validité du jeton (vérification basique ici, adaptez selon vos besoins)
+		// Vérifier la validité du jeton
 		if !isValidToken(token) {
 			http.Error(w, "Token invalide", http.StatusUnauthorized)
 			return

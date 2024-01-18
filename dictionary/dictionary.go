@@ -14,12 +14,17 @@ type Entry struct {
 	Definition string `json:"definition"`
 }
 
+type SaveFunction interface {
+	saveToFile() error
+}
+
 // Définition d'un dictionnaire
 type Dictionary struct {
 	file       string  // fichier ou est stocké le dictionnaire
 	entries    []Entry // liste des entrées du dictionnaire
 	addChan    chan Entry
 	removeChan chan string
+	saveFn     SaveFunction
 }
 
 // contructeur d'un objet Dictionnaire
