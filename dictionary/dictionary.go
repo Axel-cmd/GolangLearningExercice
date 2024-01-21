@@ -1,11 +1,14 @@
 package dictionary
 
 import (
-	"encoding/json"
+	"context"
+	"estiam/db"
 	"estiam/middleware"
-	"fmt"
+	"log"
 	"net/http"
-	"os"
+	"time"
+
+	"github.com/go-redis/redis/v8"
 )
 
 // Représente une entrée dans le dictionnaire
@@ -14,92 +17,55 @@ type Entry struct {
 	Definition string `json:"definition"`
 }
 
-type SaveFunction interface {
-	saveToFile() error
-}
-
 // Définition d'un dictionnaire
 type Dictionary struct {
-	file    string  // fichier ou est stocké le dictionnaire
-	entries []Entry // liste des entrées du dictionnaire
-	saveFn  SaveFunction
+	db *redis.Client
 }
 
 // contructeur d'un objet Dictionnaire
-func New() (*Dictionary, error) {
-	d := &Dictionary{
-		file: "dictionary.json",
+func New() *Dictionary {
+	return &Dictionary{
+		db: db.NewDatabaseClient(),
 	}
-	err := d.loadFromFile() // charger les données depuis le fichier
-	if err != nil {
-		return &Dictionary{}, err
-	}
-	return d, nil
 }
 
 func (d *Dictionary) HandleAdd(entry Entry, errorChan chan<- *middleware.APIError) {
-	d.entries = append(d.entries, entry)
-
-	err := d.saveToFile()
+	// ajouté l'entrée dans la base
+	err := d.db.Set(context.Background(), entry.Word, entry.Definition, 10*time.Second).Err()
+	// si erreur on renvoie une erreur
 	if err != nil {
 		errorChan <- &middleware.APIError{Code: http.StatusInternalServerError, Message: "erreur lors de la tentative d'ajout d'un mot dans le dictionnaire"}
 		return
 	}
-
+	// sinon nil
 	errorChan <- nil
 }
 
 // récupérer la définition d'un mot dans le dictionnaire
 func (d *Dictionary) Get(word string) (Entry, *middleware.APIError) {
-	for _, entry := range d.entries {
-		if entry.Word == word {
-			return entry, nil
-		}
+	val, err := d.db.Get(context.Background(), word).Result()
+
+	if err == redis.Nil {
+		return Entry{}, &middleware.APIError{Code: http.StatusNotFound, Message: "le mot n'a pas été trouvé dans le dictionnaire"}
+	} else if err != nil {
+		log.Fatal(err)
 	}
 
-	return Entry{}, &middleware.APIError{Code: http.StatusNotFound, Message: "le mot n'a pas été trouvé dans le dictionnaire"}
+	return Entry{Word: word, Definition: val}, nil
 }
 
 func (d *Dictionary) HandleRemove(word string, errorChan chan<- *middleware.APIError) {
-	for i, entry := range d.entries {
-		if entry.Word == word {
-			d.entries = append(d.entries[:i], d.entries[i+1:]...)
-			err := d.saveToFile()
-			if err != nil {
-				errorChan <- &middleware.APIError{Code: http.StatusInternalServerError, Message: "erreur lors de la tentative de suppression du mot dans le dictionnaire"}
-				return
-			}
-			errorChan <- nil
-			return
-		}
-	}
-	errorChan <- &middleware.APIError{Code: http.StatusNotFound, Message: "impossible de supprimer le mot car il n'est pas présent dans le dictionnaire"}
-}
+	result := d.db.Del(context.Background(), word)
 
-func (d *Dictionary) loadFromFile() error {
-	data, err := os.ReadFile(d.file)
-	if err != nil {
-		// si aucun fichier
-
-		return fmt.Errorf("erreur lors de la tentative de lecture du fichier %s", d.file)
-
+	if result.Err() != nil {
+		errorChan <- &middleware.APIError{Code: http.StatusInternalServerError, Message: "erreur lors de la tentative de suppression du mot dans le dictionnaire"}
+		return
 	}
 
-	err = json.Unmarshal(data, &d.entries)
-	if err != nil {
-		return fmt.Errorf("erreur lors de la récupération des données dans le fichier dictionnaire : %s", d.file)
+	if result.Val() < 1 {
+		errorChan <- &middleware.APIError{Code: http.StatusNotFound, Message: "l'élément que vous souhaitez supprimé n'existe pas"}
+		return
 	}
 
-	return nil
-}
-
-func (d *Dictionary) saveToFile() error {
-	data, err := json.MarshalIndent(d.entries, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	err = os.WriteFile(d.file, data, 0644)
-
-	return err
+	errorChan <- nil
 }
