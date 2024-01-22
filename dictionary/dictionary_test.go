@@ -18,7 +18,7 @@ func (m *MockHandleAddFunction) HandleAdd(entry Entry, errorChan chan<- *middlew
 func TestHandleAdd(t *testing.T) {
 
 	dict := &Dictionary{
-		db: db.NewDatabaseClient(),
+		Db: db.NewDatabaseClient(),
 	}
 
 	// test1 : ajout réussi
@@ -38,13 +38,13 @@ func TestHandleAddFail(t *testing.T) {
 	// Cas de test 2: Échec d'ajout avec erreur de sauvegarde dans le fichier
 	// Simuler une erreur lors de la sauvegarde dans le fichier (par exemple, en forçant une erreur)
 	dict2 := &Dictionary{
-		db:          db.NewDatabaseClient(),
-		addFunction: &MockHandleAddFunction{},
+		Db:          db.NewDatabaseClient(),
+		AddFunction: &MockHandleAddFunction{},
 	}
 
 	entryWithError := Entry{Word: "test", Definition: "test"}
 	errorChanWithError := make(chan *middleware.APIError, 1)
-	go dict2.addFunction.HandleAdd(entryWithError, errorChanWithError)
+	go dict2.AddFunction.HandleAdd(entryWithError, errorChanWithError)
 	errWithError := <-errorChanWithError
 
 	assert.NotNil(t, errWithError, "Une erreur devrait se produire lors de l'ajout avec une erreur de sauvegarde dans le fichier")
@@ -53,7 +53,7 @@ func TestHandleAddFail(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	dict := &Dictionary{
-		db: db.NewDatabaseClient(),
+		Db: db.NewDatabaseClient(),
 	}
 
 	entry := Entry{Word: "test", Definition: "test"}
@@ -81,7 +81,7 @@ func TestGet(t *testing.T) {
 func TestDelete(t *testing.T) {
 
 	dict := &Dictionary{
-		db: db.NewDatabaseClient(),
+		Db: db.NewDatabaseClient(),
 	}
 
 	entry := Entry{Word: "test", Definition: "test"}

@@ -23,20 +23,20 @@ type Entry struct {
 
 // Définition d'un dictionnaire
 type Dictionary struct {
-	db          *redis.Client
-	addFunction AddFunction
+	Db          *redis.Client
+	AddFunction AddFunction
 }
 
 // contructeur d'un objet Dictionnaire
 func New() *Dictionary {
 	return &Dictionary{
-		db: db.NewDatabaseClient(),
+		Db: db.NewDatabaseClient(),
 	}
 }
 
 func (d *Dictionary) HandleAdd(entry Entry, errorChan chan<- *middleware.APIError) {
 	// ajouté l'entrée dans la base
-	err := d.db.Set(context.Background(), entry.Word, entry.Definition, 10*time.Second).Err()
+	err := d.Db.Set(context.Background(), entry.Word, entry.Definition, 10*time.Second).Err()
 	// si erreur on renvoie une erreur
 	if err != nil {
 		errorChan <- &middleware.APIError{Code: http.StatusInternalServerError, Message: "erreur lors de la tentative d'ajout d'un mot dans le dictionnaire"}
@@ -48,7 +48,7 @@ func (d *Dictionary) HandleAdd(entry Entry, errorChan chan<- *middleware.APIErro
 
 // récupérer la définition d'un mot dans le dictionnaire
 func (d *Dictionary) Get(word string) (Entry, *middleware.APIError) {
-	val, err := d.db.Get(context.Background(), word).Result()
+	val, err := d.Db.Get(context.Background(), word).Result()
 
 	if err == redis.Nil {
 		return Entry{}, &middleware.APIError{Code: http.StatusNotFound, Message: "le mot n'a pas été trouvé dans le dictionnaire"}
@@ -60,7 +60,7 @@ func (d *Dictionary) Get(word string) (Entry, *middleware.APIError) {
 }
 
 func (d *Dictionary) HandleRemove(word string, errorChan chan<- *middleware.APIError) {
-	result := d.db.Del(context.Background(), word)
+	result := d.Db.Del(context.Background(), word)
 
 	if result.Err() != nil {
 		errorChan <- &middleware.APIError{Code: http.StatusInternalServerError, Message: "erreur lors de la tentative de suppression du mot dans le dictionnaire"}
