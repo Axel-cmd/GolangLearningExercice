@@ -3,10 +3,17 @@ package dictionary
 import (
 	"estiam/db"
 	"estiam/middleware"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+type MockHandleAddFunction struct{}
+
+func (m *MockHandleAddFunction) HandleAdd(entry Entry, errorChan chan<- *middleware.APIError) {
+	errorChan <- &middleware.APIError{Code: http.StatusInternalServerError, Message: "Erreur simulée lors de l'ajout d'une entrée en bdd"}
+}
 
 func TestHandleAdd(t *testing.T) {
 
@@ -25,19 +32,23 @@ func TestHandleAdd(t *testing.T) {
 	testEntry, _ := dict.Get(entry.Word)
 	assert.Equal(t, entry.Definition, testEntry.Definition, "L'entrée devrait être ajouté dans la bdd")
 
-	// 	// Cas de test 2: Échec d'ajout avec erreur de sauvegarde dans le fichier
-	// 	// Simuler une erreur lors de la sauvegarde dans le fichier (par exemple, en forçant une erreur)
-	// 	// dict = &Dictionary{
-	// 	// 	db: db.NewDatabaseClient(),
-	// 	// }
+}
 
-	// 	entryWithError := Entry{Word: "test", Definition: "test"}
-	// 	errorChanWithError := make(chan *middleware.APIError, 1)
-	// 	go dict.HandleAdd(entryWithError, errorChanWithError)
-	// 	errWithError := <-errorChanWithError
+func TestHandleAddFail(t *testing.T) {
+	// Cas de test 2: Échec d'ajout avec erreur de sauvegarde dans le fichier
+	// Simuler une erreur lors de la sauvegarde dans le fichier (par exemple, en forçant une erreur)
+	dict2 := &Dictionary{
+		db:          db.NewDatabaseClient(),
+		addFunction: &MockHandleAddFunction{},
+	}
 
-	// 	assert.NotNil(t, errWithError, "Une erreur devrait se produire lors de l'ajout avec une erreur de sauvegarde dans le fichier")
-	// 	assert.Equal(t, http.StatusInternalServerError, errWithError.Code, "Le code d'erreur devrait être 500")
+	entryWithError := Entry{Word: "test", Definition: "test"}
+	errorChanWithError := make(chan *middleware.APIError, 1)
+	go dict2.addFunction.HandleAdd(entryWithError, errorChanWithError)
+	errWithError := <-errorChanWithError
+
+	assert.NotNil(t, errWithError, "Une erreur devrait se produire lors de l'ajout avec une erreur de sauvegarde dans le fichier")
+	assert.Equal(t, http.StatusInternalServerError, errWithError.Code, "Le code d'erreur devrait être 500")
 }
 
 func TestGet(t *testing.T) {

@@ -11,6 +11,10 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+type AddFunction interface {
+	HandleAdd(entry Entry, errorChan chan<- *middleware.APIError)
+}
+
 // Représente une entrée dans le dictionnaire
 type Entry struct {
 	Word       string `json:"word"`
@@ -19,7 +23,8 @@ type Entry struct {
 
 // Définition d'un dictionnaire
 type Dictionary struct {
-	db *redis.Client
+	db          *redis.Client
+	addFunction AddFunction
 }
 
 // contructeur d'un objet Dictionnaire

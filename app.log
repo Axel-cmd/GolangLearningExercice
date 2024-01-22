@@ -70,3 +70,8 @@
 2024/01/21 18:56:32 [DELETE] [::1]:1799 /words/test PostmanRuntime/7.36.1
 2024/01/21 18:56:35 [GET] [::1]:1799 /words/test PostmanRuntime/7.36.1
 2024/01/21 19:08:21 [DELETE] [::1]:1886 /words/test PostmanRuntime/7.36.1
+2024/01/22 13:30:13 [GET] [::1]:3121 /words/test PostmanRuntime/7.36.1
+2024/01/22 13:30:17 [POST] [::1]:3121 /words PostmanRuntime/7.36.1
+2024/01/22 13:30:20 [GET] [::1]:3121 /words/test PostmanRuntime/7.36.1
+2024/01/22 13:30:24 [DELETE] [::1]:3121 /words/test PostmanRuntime/7.36.1
+2024/01/22 13:30:27 [GET] [::1]:3121 /words/test PostmanRuntime/7.36.1
