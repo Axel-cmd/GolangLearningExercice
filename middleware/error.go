@@ -14,9 +14,6 @@ func ErrorMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
-				// Logguer l'erreur paniquée
-				// errors.LogError(errors.New("Panic: " + r.(string)))
-
 				// Répondre avec une erreur 500
 				w.WriteHeader(http.StatusInternalServerError)
 			}
